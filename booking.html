@@ -43,9 +43,12 @@
 <div class="booking-summary-line"><span>Selected rooms</span><strong id="booking-selection">No rooms selected</strong></div>
 <div class="booking-summary-line"><span>Number of nights</span><strong id="booking-nights">0</strong></div>
 <div class="booking-summary-line"><span>Accommodation</span><strong id="booking-room-total">₱0</strong></div>
-<div class="booking-total"><span>ESTIMATED TOTAL</span><strong id="booking-grand-total">₱0</strong></div>
-<p class="booking-help">Prices are calculated in Philippine pesos. Availability and final payment will be checked securely before a reservation is confirmed.</p>
-<button class="reservation-button booking-submit" id="booking-review" type="submit" disabled>REVIEW BOOKING DETAILS <span aria-hidden="true">→</span></button>
+<div class="booking-total"><span>ESTIMATED TOTAL (PHP)</span><strong id="booking-grand-total">₱0</strong></div>
+<div class="booking-summary-line" id="booking-ngn-line" hidden><span>Paystack amount (NGN)</span><strong id="booking-ngn-total">₦0</strong></div>
+<div class="booking-summary-line" id="booking-rate-line" hidden><span>Daily reference rate</span><strong id="booking-rate-value">—</strong></div>
+<p class="booking-help">Room quantities are your requested units. The resort will assign actual rooms at reception. Your PHP total is converted using the latest available daily PHP-to-NGN reference rate. Paystack charges in NGN.</p>
+<button class="reservation-button booking-submit" id="booking-review" type="submit" disabled>CONTINUE TO PAYMENT <span aria-hidden="true">→</span></button>
+<a class="reservation-button booking-submit" id="booking-pay-link" href="#" hidden rel="noopener">CONTINUE TO SECURE PAYMENT →</a>
 <p class="booking-message" id="booking-message" role="status" aria-live="polite"></p>
 </section></form></div></section></main>
 <footer class="site-footer"><a class="footer-brand" href="index.html">Momarco <span>FOREST COVE RESORT</span></a><p>Tanay, Rizal, Philippines</p><small>© <span id="year"></span> Momarco Resort</small></footer>
