@@ -99,8 +99,10 @@
     if (quantity > 0 && Number(guests.value) > Number(row.dataset.capacity)) guests.value = row.dataset.capacity;
     updateBooking();
   })));
-  bookingForm.addEventListener("submit", async (event) => {
+  let bookingInProgress = false;
+  const handleBooking = async (event) => {
     event.preventDefault();
+    if (bookingInProgress) return;
     const nights = getNights();
     const chosen = roomRows.filter((row) => Number(row.querySelector("[data-quantity]").value) > 0);
     if (nights < 1 || chosen.length === 0) {
@@ -130,6 +132,7 @@
       check_out: checkOut.value,
       rooms
     };
+    bookingInProgress = true;
     submit.disabled = true;
     submit.textContent = "SUBMITTING REQUEST…";
     message.textContent = "Preparing your booking and secure payment…";
@@ -155,9 +158,12 @@
       window.location.assign(result.payment_url);
     } catch (error) {
       message.textContent = error.message || "Something went wrong. Please try again.";
+      bookingInProgress = false;
       submit.disabled = false;
       submit.innerHTML = 'CONTINUE TO PAYMENT <span aria-hidden="true">→</span>';
     }
-  });
+  };
+  submit.addEventListener("click", handleBooking);
+  bookingForm.addEventListener("submit", handleBooking);
   updateBooking();
 })();
