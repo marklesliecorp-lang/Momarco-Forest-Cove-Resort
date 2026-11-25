@@ -200,3 +200,11 @@ h1 { max-width: 900px; margin: 0; color: var(--pink); font-size: clamp(23px, 4.8
   .booking-room-control { font-size: 8px; }
   .booking-room-control input { font-size: 12px; }
 }
+
+
+/* Booking payment summary visibility */
+#booking-ngn-line[hidden],
+#booking-rate-line[hidden],
+#booking-pay-link[hidden] {
+  display: none !important;
+}
