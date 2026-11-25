@@ -7,7 +7,7 @@ const localToday = () => {
 };
 
 const validDate = (value) => {
-  if (typeof value !== "string" || !/^\\d{4}-\\d{2}-\\d{2}$/.test(value)) return false;
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
   const date = new Date(value + "T00:00:00Z");
   return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 };
@@ -32,7 +32,7 @@ export async function onRequestPost({ request, env }) {
   const items = body.rooms;
 
   if (name.length < 2 || name.length > 120) return json({ error: "Enter your full name." }, 400);
-  if (email.length > 254 || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) return json({ error: "Enter a valid email address." }, 400);
+  if (email.length > 254 || !/^[^\s@]+@[^\s@]+\\.[^\s@]+$/.test(email)) return json({ error: "Enter a valid email address." }, 400);
   if (phone.length < 7 || phone.length > 40) return json({ error: "Enter a valid phone number." }, 400);
   if (!validDate(checkIn) || !validDate(checkOut) || checkIn < localToday() || checkOut <= checkIn) return json({ error: "Choose valid future check-in and check-out dates." }, 400);
   const nights = (Date.parse(checkOut + "T00:00:00Z") - Date.parse(checkIn + "T00:00:00Z")) / 86400000;
@@ -69,7 +69,7 @@ export async function onRequestPost({ request, env }) {
   if (!fxResponse.ok) return json({ error: "The daily exchange rate is temporarily unavailable. Please try again shortly." }, 503);
   const fxRows = await fxResponse.json();
   const fx = Array.isArray(fxRows) ? fxRows.find((row) => row.base === "PHP" && row.quote === "NGN") : null;
-  if (!fx || !Number.isFinite(fx.rate) || fx.rate <= 0 || !/^\\d{4}-\\d{2}-\\d{2}$/.test(fx.date || "")) return json({ error: "A PHP-to-NGN reference rate is not available today. Please try again later." }, 503);
+  if (!fx || !Number.isFinite(fx.rate) || fx.rate <= 0 || !/^\d{4}-\d{2}-\d{2}$/.test(fx.date || "")) return json({ error: "A PHP-to-NGN reference rate is not available today. Please try again later." }, 503);
 
   const amountNgn = Math.round(totalPhp * fx.rate * 100) / 100;
   const amountKobo = Math.round(amountNgn * 100);
