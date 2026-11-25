@@ -16,10 +16,6 @@
     nights: document.getElementById("booking-nights"),
     roomTotal: document.getElementById("booking-room-total"),
     grandTotal: document.getElementById("booking-grand-total"),
-    ngnLine: document.getElementById("booking-ngn-line"),
-    ngnTotal: document.getElementById("booking-ngn-total"),
-    rateLine: document.getElementById("booking-rate-line"),
-    rateValue: document.getElementById("booking-rate-value")
   };
 
   if (!checkIn || !checkOut || !button || !message || !roomRows.length) {
@@ -30,9 +26,6 @@
   let sending = false;
   const php = new Intl.NumberFormat("en-PH", {
     style: "currency", currency: "PHP", maximumFractionDigits: 0
-  });
-  const ngn = new Intl.NumberFormat("en-NG", {
-    style: "currency", currency: "NGN", maximumFractionDigits: 2
   });
 
   const localDate = () => {
@@ -185,13 +178,6 @@
           paymentUrl.hostname !== "checkout.paystack.com") {
         throw new Error("Paystack did not return a valid secure checkout address.");
       }
-
-      outputs.ngnTotal.textContent = ngn.format(Number(result.ngn_amount));
-      outputs.rateValue.textContent = "₱1 = ₦" +
-        Number(result.exchange_rate).toFixed(4) +
-        " · rate date " + result.exchange_rate_date;
-      outputs.ngnLine.hidden = false;
-      outputs.rateLine.hidden = false;
 
       showMessage("Booking reference: " + result.reference +
         ". Redirecting you to Paystack secure checkout. Your booking is confirmed after payment is verified.", true);
