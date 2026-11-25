@@ -9,7 +9,6 @@
   const button = document.getElementById("booking-review");
   const message = document.getElementById("booking-message");
   const roomRows = Array.from(form.querySelectorAll(".booking-room-row"));
-  const payLink = document.getElementById("booking-pay-link");
 
   const outputs = {
     selection: document.getElementById("booking-selection"),
@@ -153,7 +152,7 @@
     sending = true;
     button.disabled = true;
     button.textContent = "PREPARING SECURE PAYMENT…";
-    showMessage("Submitting your booking and preparing Paystack checkout…");
+    showMessage("Submitting your booking and preparing secure payment…");
 
     try {
       const response = await fetch("/api/booking-requests", {
@@ -173,21 +172,18 @@
         throw new Error(result.error || "We could not prepare your booking. Please try again.");
       }
 
-      const paymentUrl = new URL(result.payment_url);
-      if (paymentUrl.protocol !== "https:" ||
-          paymentUrl.hostname !== "checkout.paystack.com") {
-        throw new Error("Paystack did not return a valid secure checkout address.");
+      if (typeof result.access_code !== "string" || !result.access_code.trim()) {
+        throw new Error("Paystack did not return a valid secure payment code.");
+      }
+      if (typeof window.PaystackPop !== "function") {
+        throw new Error("Secure checkout could not load. Please refresh the page and try again.");
       }
 
       showMessage("Booking reference: " + result.reference +
-        ". Redirecting you to Paystack secure checkout. Your booking is confirmed after payment is verified.", true);
+        ". Complete your payment in the secure Paystack window. Your booking is confirmed after payment is verified.", true);
 
-      if (payLink) {
-        payLink.href = paymentUrl.href;
-        payLink.hidden = false;
-      }
-
-      window.location.href = paymentUrl.href;
+      const popup = new window.PaystackPop();
+      popup.resumeTransaction(result.access_code);
     } catch (error) {
       console.error("Booking submission failed:", error);
       sending = false;
