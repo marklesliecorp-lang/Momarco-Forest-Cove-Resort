@@ -113,7 +113,7 @@
       return !Number.isSafeInteger(quantity) || quantity < 1 || !Number.isSafeInteger(guests) || guests < 1 || guests > Number(row.dataset.capacity);
     });
     if (invalid || !bookingForm.reportValidity()) {
-      message.textContent = "Please check the guest count for each selected room.";
+      message.textContent = "Please complete all required guest details and check the guest count for each selected room.";
       return;
     }
     const rooms = chosen.map((row) => ({
