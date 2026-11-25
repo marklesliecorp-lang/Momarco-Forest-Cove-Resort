@@ -75,6 +75,28 @@ export async function onRequestPost({ request, env }) {
   const amountKobo = Math.round(amountNgn * 100);
   if (!Number.isSafeInteger(amountKobo) || amountKobo < 100) return json({ error: "The payment amount is invalid." }, 400);
 
+  const siteUrl = new URL(request.url).origin;
+  let paystack;
+  const randomReference = reference;
+  try {
+    const paymentResponse = await fetch("https://api.paystack.co/transaction/initialize", {
+      method: "POST",
+      headers: { "authorization": "Bearer " + env.PAYSTACK_SECRET_KEY, "content-type": "application/json", "accept": "application/json" },
+      body: JSON.stringify({
+        email,
+        amount: amountKobo,
+        currency: "NGN",
+        reference: randomReference,
+        callback_url: siteUrl + "/api/paystack-callback",
+        metadata: { booking_reference: reference, php_total: totalPhp, ngn_amount: amountNgn, fx_rate: fx.rate, fx_rate_date: fx.date }
+      })
+    });
+    paystack = await paymentResponse.json();
+    if (!paymentResponse.ok || !paystack.status || !paystack.data?.access_code || paystack.data.reference !== reference) {
+      return json({ error: "Paystack could not start the payment. Please try again." }, 502);
+    }
+  } catch { return json({ error: "We could not connect to Paystack. Please try again." }, 502); }
+
   const id = crypto.randomUUID();
   const random = new Uint8Array(4);
   crypto.getRandomValues(random);
@@ -93,7 +115,11 @@ export async function onRequestPost({ request, env }) {
     nights,
     php_total: totalPhp,
     currency: "PHP",
-    payment_status: "pending",
-    next_step: "card_details"
+    exchange_rate: fx.rate,
+    exchange_rate_date: fx.date,
+    ngn_amount: amountNgn,
+    ngn_kobo: amountKobo,
+    access_code: paystack.data.access_code,
+    payment_status: "pending"
   }, 201);
 }
