@@ -14,12 +14,17 @@ const validDate = (value) => {
 
 export async function onRequestPost({ request, env }) {
   const origin = request.headers.get("Origin");
-  if (origin && new URL(origin).host !== new URL(request.url).host) return json({ error: "Request origin not allowed." }, 403);
+  try {
+    if (origin && new URL(origin).host !== new URL(request.url).host) return json({ error: "Request origin not allowed." }, 403);
+  } catch {
+    return json({ error: "Request origin is invalid." }, 403);
+  }
   if (!request.headers.get("content-type")?.toLowerCase().includes("application/json")) return json({ error: "Invalid request format." }, 415);
   if (Number(request.headers.get("content-length") || 0) > 16000) return json({ error: "Request is too large." }, 413);
 
   let body;
   try { body = await request.json(); } catch { return json({ error: "Please submit valid booking details." }, 400); }
+  if (!body || typeof body !== "object" || Array.isArray(body)) return json({ error: "Please submit valid booking details." }, 400);
   const name = String(body.full_name || "").trim();
   const email = String(body.email || "").trim().toLowerCase();
   const phone = String(body.phone || "").trim();
