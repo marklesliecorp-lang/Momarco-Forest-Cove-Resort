@@ -148,10 +148,11 @@
       rateLine.hidden = false;
       payLink.href = result.payment_url;
       payLink.hidden = false;
-      message.textContent = "Booking reference: " + result.reference + ". PHP total: " + money(result.php_total) + ". Review the NGN amount above, then continue to Paystack. Your booking is confirmed only after Paystack verifies payment.";
+      message.textContent = "Booking reference: " + result.reference + ". Your secure Paystack checkout is opening now. Your booking is confirmed only after Paystack verifies payment.";
       message.classList.add("is-success");
       bookingForm.querySelectorAll("input").forEach((input) => { input.disabled = true; });
-      submit.textContent = "PAYMENT DETAILS READY";
+      submit.textContent = "OPENING SECURE PAYMENT…";
+      window.location.assign(result.payment_url);
     } catch (error) {
       message.textContent = error.message || "Something went wrong. Please try again.";
       submit.disabled = false;
