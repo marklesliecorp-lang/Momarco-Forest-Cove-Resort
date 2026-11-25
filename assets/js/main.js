@@ -47,8 +47,14 @@
   const grandTotalOutput = bookingForm.querySelector("#booking-grand-total");
   const selectionOutput = bookingForm.querySelector("#booking-selection");
   const message = bookingForm.querySelector("#booking-message");
+  const ngnLine = bookingForm.querySelector("#booking-ngn-line");
+  const ngnOutput = bookingForm.querySelector("#booking-ngn-total");
+  const rateLine = bookingForm.querySelector("#booking-rate-line");
+  const rateOutput = bookingForm.querySelector("#booking-rate-value");
+  const payLink = bookingForm.querySelector("#booking-pay-link");
   const submit = bookingForm.querySelector("#booking-review");
   const money = (amount) => new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP", maximumFractionDigits: 0 }).format(amount);
+  const naira = (amount) => new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 2 }).format(amount);
   const getNights = () => {
     if (!checkIn.value || !checkOut.value) return 0;
     return Math.round((new Date(checkOut.value + "T00:00:00") - new Date(checkIn.value + "T00:00:00")) / 86400000);
@@ -126,7 +132,7 @@
     };
     submit.disabled = true;
     submit.textContent = "SUBMITTING REQUEST…";
-    message.textContent = "Submitting your booking request securely…";
+    message.textContent = "Preparing your booking and secure payment…";
     try {
       const response = await fetch("/api/booking-requests", {
         method: "POST",
@@ -135,14 +141,21 @@
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "We could not submit your request. Please try again.");
-      message.textContent = "Request received. Reference: " + result.reference + ". Estimated total: " + money(result.estimated_total) + ". Your dates and room availability still need to be checked by the resort. This is not a confirmed reservation and no payment has been taken.";
+      if (!result.payment_url || new URL(result.payment_url).origin !== "https://checkout.paystack.com") throw new Error("The secure Paystack checkout link could not be validated.");
+      ngnOutput.textContent = naira(result.ngn_amount);
+      rateOutput.textContent = "₱1 = ₦" + Number(result.exchange_rate).toFixed(4) + " · rate date " + result.exchange_rate_date;
+      ngnLine.hidden = false;
+      rateLine.hidden = false;
+      payLink.href = result.payment_url;
+      payLink.hidden = false;
+      message.textContent = "Booking reference: " + result.reference + ". PHP total: " + money(result.php_total) + ". Review the NGN amount above, then continue to Paystack. Your booking is confirmed only after Paystack verifies payment.";
       message.classList.add("is-success");
       bookingForm.querySelectorAll("input").forEach((input) => { input.disabled = true; });
-      submit.textContent = "REQUEST SUBMITTED";
+      submit.textContent = "PAYMENT DETAILS READY";
     } catch (error) {
       message.textContent = error.message || "Something went wrong. Please try again.";
       submit.disabled = false;
-      submit.innerHTML = 'REVIEW BOOKING DETAILS <span aria-hidden="true">→</span>';
+      submit.innerHTML = 'CONTINUE TO PAYMENT <span aria-hidden="true">→</span>';
     }
   });
   updateBooking();
