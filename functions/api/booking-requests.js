@@ -75,6 +75,11 @@ export async function onRequestPost({ request, env }) {
   const amountKobo = Math.round(amountNgn * 100);
   if (!Number.isSafeInteger(amountKobo) || amountKobo < 100) return json({ error: "The payment amount is invalid." }, 400);
 
+  const random = new Uint8Array(4);
+  crypto.getRandomValues(random);
+  const suffix = Array.from(random, (value) => value.toString(16).padStart(2, "0")).join("").toUpperCase();
+  const reference = "MFC-" + Date.now().toString(36).toUpperCase() + "-" + suffix;
+
   const siteUrl = new URL(request.url).origin;
   let paystack;
   const randomReference = reference;
@@ -98,10 +103,6 @@ export async function onRequestPost({ request, env }) {
   } catch { return json({ error: "We could not connect to Paystack. Please try again." }, 502); }
 
   const id = crypto.randomUUID();
-  const random = new Uint8Array(4);
-  crypto.getRandomValues(random);
-  const suffix = Array.from(random, (value) => value.toString(16).padStart(2, "0")).join("").toUpperCase();
-  const reference = "MFC-" + Date.now().toString(36).toUpperCase() + "-" + suffix;
 
   const statements = [
     env.DB.prepare("INSERT INTO booking_requests (id, reference, guest_name, guest_email, guest_phone, check_in, check_out, nights, estimated_total, currency, status, exchange_rate, exchange_rate_date, amount_ngn_kobo, payment_reference, payment_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'PHP', 'pending_payment', ?, ?, ?, ?, 'pending')").bind(id, reference, name, email, phone, checkIn, checkOut, nights, totalPhp, fx.rate, fx.date, amountKobo, reference),
