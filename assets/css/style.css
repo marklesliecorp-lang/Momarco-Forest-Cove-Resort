@@ -110,3 +110,26 @@ h1 { max-width: 900px; margin: 0; color: var(--pink); font-size: clamp(23px, 4.8
   .room-card-content { padding: 20px; }
   .room-card-content > p:not(.room-category):not(.room-capacity) { min-height: 0; }
 }
+
+/* Accommodation rate list */
+.rate-category { max-width: 920px; margin: 0 auto 24px; padding: 25px 28px 12px; text-align: left; background: var(--night); border: 1px solid rgba(244,168,210,.38); }
+.rate-category-heading { padding: 0 0 18px; border-bottom: 1px solid rgba(244,168,210,.3); }
+.rate-category-heading .room-category { margin-bottom: 8px; }
+.rate-category-heading h3 { margin: 0; color: var(--white); font-size: 21px; font-weight: 600; letter-spacing: .035em; }
+.rate-period { display: inline-block; margin-top: 10px; color: var(--pink-soft); font-size: 9px; font-weight: 700; letter-spacing: .18em; }
+.rate-list { display: flex; flex-direction: column; }
+.rate-item { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 16px 0; border-bottom: 1px solid rgba(244,168,210,.16); }
+.rate-item:last-child { border-bottom: 0; }
+.rate-item h4 { margin: 0; color: var(--white); font-size: 13px; font-weight: 600; line-height: 1.5; }
+.rate-item p { margin: 5px 0 0; color: var(--muted); font-size: 10px; line-height: 1.6; }
+.rate-item > strong { flex: 0 0 auto; color: var(--pink); font-size: 17px; font-weight: 700; white-space: nowrap; }
+.rate-item > strong small { color: var(--muted); font-size: 10px; font-weight: 500; }
+.rate-item > strong .free-rate { color: var(--pink-soft); letter-spacing: .08em; }
+@media (max-width: 600px) {
+  .rate-category { margin-bottom: 16px; padding: 20px 17px 8px; }
+  .rate-category-heading h3 { font-size: 19px; }
+  .rate-item { min-height: 70px; gap: 12px; padding: 14px 0; }
+  .rate-item h4 { font-size: 12px; }
+  .rate-item p { max-width: 235px; font-size: 9px; }
+  .rate-item > strong { font-size: 15px; }
+}
