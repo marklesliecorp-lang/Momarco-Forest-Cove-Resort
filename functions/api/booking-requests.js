@@ -80,26 +80,6 @@ export async function onRequestPost({ request, env }) {
   crypto.getRandomValues(random);
   const suffix = Array.from(random, (value) => value.toString(16).padStart(2, "0")).join("").toUpperCase();
   const reference = "MFC-" + Date.now().toString(36).toUpperCase() + "-" + suffix;
-  const siteUrl = new URL(request.url).origin;
-  let paystack;
-  try {
-    const paymentResponse = await fetch("https://api.paystack.co/transaction/initialize", {
-      method: "POST",
-      headers: { "authorization": "Bearer " + env.PAYSTACK_SECRET_KEY, "content-type": "application/json", "accept": "application/json" },
-      body: JSON.stringify({
-        email,
-        amount: amountKobo,
-        currency: "NGN",
-        reference,
-        callback_url: siteUrl + "/api/paystack-callback",
-        metadata: { booking_reference: reference, php_total: totalPhp, ngn_amount: amountNgn, fx_rate: fx.rate, fx_rate_date: fx.date }
-      })
-    });
-    paystack = await paymentResponse.json();
-    if (!paymentResponse.ok || !paystack.status || !paystack.data?.access_code || paystack.data.reference !== reference) {
-      return json({ error: "Paystack could not start the payment. Please try again." }, 502);
-    }
-  } catch { return json({ error: "We could not connect to Paystack. Please try again." }, 502); }
 
   const statements = [
     env.DB.prepare("INSERT INTO booking_requests (id, reference, guest_name, guest_email, guest_phone, check_in, check_out, nights, estimated_total, currency, status, exchange_rate, exchange_rate_date, amount_ngn_kobo, payment_reference, payment_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'PHP', 'pending_payment', ?, ?, ?, ?, 'pending')").bind(id, reference, name, email, phone, checkIn, checkOut, nights, totalPhp, fx.rate, fx.date, amountKobo, reference),
@@ -113,11 +93,7 @@ export async function onRequestPost({ request, env }) {
     nights,
     php_total: totalPhp,
     currency: "PHP",
-    exchange_rate: fx.rate,
-    exchange_rate_date: fx.date,
-    ngn_amount: amountNgn,
-    ngn_kobo: amountKobo,
-    access_code: paystack.data.access_code,
-    payment_status: "pending"
+    payment_status: "pending",
+    next_step: "card_details"
   }, 201);
 }
