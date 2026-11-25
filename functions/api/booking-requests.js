@@ -7,7 +7,7 @@ const localToday = () => {
 };
 
 const validDate = (value) => {
-  if (typeof value !== "string" || !/^\\d{4}-\\d{2}-\\d{2}$/.test(value)) return false;
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
   const date = new Date(value + "T00:00:00Z");
   return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 };
@@ -28,7 +28,7 @@ export async function onRequestPost({ request, env }) {
   const items = body.rooms;
 
   if (name.length < 2 || name.length > 120) return json({ error: "Enter your full name." }, 400);
-  if (email.length > 254 || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) return json({ error: "Enter a valid email address." }, 400);
+  if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: "Enter a valid email address." }, 400);
   if (phone.length < 7 || phone.length > 40) return json({ error: "Enter a valid phone number." }, 400);
   if (!validDate(checkIn) || !validDate(checkOut) || checkIn < localToday() || checkOut <= checkIn) return json({ error: "Choose valid future check-in and check-out dates." }, 400);
   const nights = (Date.parse(checkOut + "T00:00:00Z") - Date.parse(checkIn + "T00:00:00Z")) / 86400000;
