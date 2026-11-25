@@ -93,7 +93,7 @@
     if (quantity > 0 && Number(guests.value) > Number(row.dataset.capacity)) guests.value = row.dataset.capacity;
     updateBooking();
   })));
-  bookingForm.addEventListener("submit", (event) => {
+  bookingForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     const nights = getNights();
     const chosen = roomRows.filter((row) => Number(row.querySelector("[data-quantity]").value) > 0);
@@ -104,13 +104,46 @@
     const invalid = chosen.some((row) => {
       const quantity = Number(row.querySelector("[data-quantity]").value);
       const guests = Number(row.querySelector("[data-guests]").value);
-      return quantity < 1 || guests < 1 || guests > Number(row.dataset.capacity);
+      return !Number.isSafeInteger(quantity) || quantity < 1 || !Number.isSafeInteger(guests) || guests < 1 || guests > Number(row.dataset.capacity);
     });
     if (invalid || !bookingForm.reportValidity()) {
       message.textContent = "Please check the guest count for each selected room.";
       return;
     }
-    message.textContent = "Your booking details are ready to review. Online payment and reservation confirmation will be activated after the secure booking system is connected. No payment has been taken and no room is reserved yet.";
+    const rooms = chosen.map((row) => ({
+      room_type_id: row.dataset.roomId,
+      quantity: Number(row.querySelector("[data-quantity]").value),
+      guests_per_room: Number(row.querySelector("[data-guests]").value)
+    }));
+    const fields = new FormData(bookingForm);
+    const payload = {
+      full_name: fields.get("full_name"),
+      email: fields.get("email"),
+      phone: fields.get("phone"),
+      check_in: checkIn.value,
+      check_out: checkOut.value,
+      rooms
+    };
+    submit.disabled = true;
+    submit.textContent = "SUBMITTING REQUEST…";
+    message.textContent = "Submitting your booking request securely…";
+    try {
+      const response = await fetch("/api/booking-requests", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "We could not submit your request. Please try again.");
+      message.textContent = "Request received. Reference: " + result.reference + ". Estimated total: " + money(result.estimated_total) + ". Your dates and room availability still need to be checked by the resort. This is not a confirmed reservation and no payment has been taken.";
+      message.classList.add("is-success");
+      bookingForm.querySelectorAll("input").forEach((input) => { input.disabled = true; });
+      submit.textContent = "REQUEST SUBMITTED";
+    } catch (error) {
+      message.textContent = error.message || "Something went wrong. Please try again.";
+      submit.disabled = false;
+      submit.innerHTML = 'REVIEW BOOKING DETAILS <span aria-hidden="true">→</span>';
+    }
   });
   updateBooking();
 })();
