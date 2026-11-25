@@ -32,12 +32,10 @@ h1 { margin: 0; color: var(--pink); font-size: clamp(25px, 5vw, 39px); font-weig
 .intro-copy { max-width: 650px; margin: 75px auto 32px; color: var(--pink-soft); font-size: 14px; font-weight: 500; line-height: 1.9; letter-spacing: .12em; }
 .pink-rule { width: min(100%, 700px); height: 2px; background: var(--pink); }
 .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 35px 7% 85px; }
-.gallery-tile { min-height: 260px; display: flex; align-items: end; padding: 18px; background-color: #263a35; background-size: cover; background-position: center; position: relative; overflow: hidden; }
-.gallery-tile::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 35%, rgba(10,12,30,.76)); }
-.gallery-tile span { position: relative; color: white; font-size: 9px; letter-spacing: .2em; }
-.gallery-one { background-image: linear-gradient(145deg, #314d3d, #66794d 48%, #182c2c); }
-.gallery-two { background-image: linear-gradient(145deg, #4c6844, #9a9b5b 50%, #273b2d); }
-.gallery-three { background-image: linear-gradient(145deg, #263c39, #647b67 50%, #182b30); }
+.gallery-tile { min-height: 260px; margin: 0; position: relative; overflow: hidden; background: #171735; }
+.gallery-tile img { display: block; width: 100%; height: 100%; min-height: 260px; object-fit: cover; transition: transform .45s ease; }
+.gallery-tile:hover img { transform: scale(1.04); }
+.gallery-tile figcaption { position: absolute; inset: auto 0 0; padding: 35px 18px 17px; color: white; font-size: 9px; letter-spacing: .2em; background: linear-gradient(transparent, rgba(10,12,30,.82)); }
 .stay { padding: 90px 25px 105px; text-align: center; background: var(--night-soft); }
 .stay .location, .contact .location { margin-bottom: 24px; }
 .stay h2, .contact h2 { margin: 0; color: var(--pink); font-size: clamp(32px, 6vw, 49px); font-weight: 500; letter-spacing: .07em; }
@@ -57,7 +55,7 @@ h1 { margin: 0; color: var(--pink); font-size: clamp(25px, 5vw, 39px); font-weig
   .intro { min-height: 620px; }
   .intro-copy { font-size: 15px; }
   .gallery { padding-left: 10%; padding-right: 10%; gap: 18px; }
-  .gallery-tile { min-height: 390px; }
+  .gallery-tile, .gallery-tile img { min-height: 390px; }
 }
 @media (max-width: 600px) {
   .site-header { min-height: 118px; padding: 17px 22px; }
@@ -68,8 +66,8 @@ h1 { margin: 0; color: var(--pink); font-size: clamp(25px, 5vw, 39px); font-weig
   h1 { font-size: 26px; letter-spacing: .1em; }
   .intro-copy { margin-top: 73px; margin-bottom: 27px; font-size: 12px; line-height: 1.85; letter-spacing: .105em; }
   .gallery { grid-template-columns: 1fr 1fr; gap: 9px; padding: 28px 22px 68px; }
-  .gallery-tile { min-height: 190px; padding: 13px; }
-  .gallery-three { grid-column: 1 / -1; min-height: 180px; }
+  .gallery-tile, .gallery-tile img { min-height: 190px; }
+  .gallery-tile:nth-child(5), .gallery-tile:nth-child(6) { min-height: 180px; }
   .stay { padding: 75px 23px 82px; }
   .stay-copy { font-size: 12px; }
   .contact { padding: 58px 22px 75px; }
