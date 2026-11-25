@@ -168,7 +168,7 @@ h1 { max-width: 900px; margin: 0; color: var(--pink); font-size: clamp(23px, 4.8
 .booking-panel h2 { margin: 0 0 18px; color: var(--pink); font-size: 17px; letter-spacing: .04em; }
 .booking-dates, .booking-contact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .booking-field { display: flex; flex-direction: column; gap: 8px; color: var(--pink-soft); font-size: 10px; font-weight: 700; letter-spacing: .08em; }
-.booking-field input, .booking-room-row input { width: 100%; min-height: 46px; padding: 10px 12px; border: 1px solid rgba(244,168,210,.45); border-radius: 0; outline: none; background: var(--night-soft); color: var(--white); font: 13px var(--sans); color-scheme: dark; }
+.booking-field input, .booking-room-row input { width: 100%; min-height: 46px; padding: 10px 12px; border: 1px solid rgba(244,168,210,.45); border-radius: 0; outline: none; background: var(--night-soft); color: var(--white); font: 16px var(--sans); color-scheme: dark; }
 .booking-field input:focus, .booking-room-row input:focus { border-color: var(--pink); box-shadow: 0 0 0 2px rgba(244,168,210,.12); }
 .booking-room-list { display: flex; flex-direction: column; gap: 10px; }
 .booking-room-row { display: grid; grid-template-columns: minmax(0, 1fr) 82px 82px; align-items: center; gap: 12px; padding: 13px 0; border-bottom: 1px solid rgba(244,168,210,.16); }
@@ -198,7 +198,7 @@ h1 { max-width: 900px; margin: 0; color: var(--pink); font-size: clamp(23px, 4.8
   .booking-room-name { font-size: 10px; }
   .booking-room-meta { font-size: 9px; }
   .booking-room-control { font-size: 8px; }
-  .booking-room-control input { font-size: 12px; }
+  .booking-room-control input { font-size: 16px; }
 }
 
 
