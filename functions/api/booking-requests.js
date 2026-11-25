@@ -96,7 +96,7 @@ export async function onRequestPost({ request, env }) {
       })
     });
     paystack = await paymentResponse.json();
-    if (!paymentResponse.ok || !paystack.status || !paystack.data?.authorization_url || paystack.data.reference !== reference) {
+    if (!paymentResponse.ok || !paystack.status || !paystack.data?.access_code || paystack.data.reference !== reference) {
       return json({ error: "Paystack could not start the payment. Please try again." }, 502);
     }
   } catch { return json({ error: "We could not connect to Paystack. Please try again." }, 502); }
@@ -117,7 +117,7 @@ export async function onRequestPost({ request, env }) {
     exchange_rate_date: fx.date,
     ngn_amount: amountNgn,
     ngn_kobo: amountKobo,
-    payment_url: paystack.data.authorization_url,
+    access_code: paystack.data.access_code,
     payment_status: "pending"
   }, 201);
 }
