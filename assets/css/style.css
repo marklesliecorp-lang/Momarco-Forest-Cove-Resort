@@ -14,9 +14,9 @@ a { color: inherit; text-decoration: none; }
 .skip-link { position: absolute; top: -60px; left: 12px; z-index: 20; padding: 12px; background: white; color: var(--night); }
 .skip-link:focus { top: 12px; }
 .site-header { min-height: 126px; padding: 20px 7%; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--pink); position: relative; z-index: 5; background: var(--night); }
-.brand { display: flex; flex-direction: column; align-items: center; min-width: 175px; color: var(--pink); }
-.brand-script { font: 400 67px/.72 "Allura", cursive; letter-spacing: -.025em; }
-.brand-place { margin-top: 8px; font-size: 17px; font-weight: 700; letter-spacing: .08em; color: var(--white); }
+.brand { display: flex; flex-direction: column; align-items: center; min-width: 230px; color: var(--pink); padding: 5px 13px 9px; border: 1px solid rgba(244,168,210,.55); }
+.brand-script { font: 400 66px/.88 "Allura", cursive; letter-spacing: -.025em; text-shadow: 0 0 18px rgba(244,168,210,.22); }
+.brand-place { margin-top: 5px; font-size: 10px; font-weight: 700; letter-spacing: .25em; color: var(--white); white-space: nowrap; }
 .menu-toggle { width: 48px; height: 48px; border: 1px solid var(--pink); background: transparent; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 6px; cursor: pointer; }
 .menu-toggle span { width: 21px; height: 2px; background: var(--pink); transition: transform .2s ease; }
 .menu-toggle[aria-expanded="true"] span:first-child { transform: translateY(8px) rotate(45deg); }
@@ -28,11 +28,11 @@ a { color: inherit; text-decoration: none; }
 .primary-nav a:last-child { border-bottom: 0; }
 .intro { min-height: 560px; padding: 115px 25px 65px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
 .location { margin: 0 0 39px; color: var(--pink); font-size: 11px; font-weight: 600; letter-spacing: .29em; }
-h1 { margin: 0; color: var(--pink); font-size: clamp(25px, 5vw, 39px); font-weight: 500; letter-spacing: .12em; }
+h1 { max-width: 900px; margin: 0; color: var(--pink); font-size: clamp(23px, 4.8vw, 38px); font-weight: 500; letter-spacing: .105em; line-height: 1.4; }
 .intro-copy { max-width: 650px; margin: 75px auto 32px; color: var(--pink-soft); font-size: 14px; font-weight: 500; line-height: 1.9; letter-spacing: .12em; }
 .pink-rule { width: min(100%, 700px); height: 2px; background: var(--pink); }
 .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 35px 7% 85px; }
-.gallery-tile { min-height: 260px; margin: 0; position: relative; overflow: hidden; background: #171735; }
+.gallery-tile { min-height: 260px; margin: 0; position: relative; overflow: hidden; background: #171735; border: 1px solid rgba(244,168,210,.48); outline: 1px solid rgba(244,168,210,.12); outline-offset: 4px; }
 .gallery-tile img { display: block; width: 100%; height: 100%; min-height: 260px; object-fit: cover; transition: transform .45s ease; }
 .gallery-tile:hover img { transform: scale(1.04); }
 .gallery-tile figcaption { position: absolute; inset: auto 0 0; padding: 35px 18px 17px; color: white; font-size: 9px; letter-spacing: .2em; background: linear-gradient(transparent, rgba(10,12,30,.82)); }
@@ -59,11 +59,13 @@ h1 { margin: 0; color: var(--pink); font-size: clamp(25px, 5vw, 39px); font-weig
 }
 @media (max-width: 600px) {
   .site-header { min-height: 118px; padding: 17px 22px; }
-  .brand-script { font-size: 62px; }
+  .brand { min-width: 0; padding: 5px 10px 8px; }
+  .brand-script { font-size: 58px; }
+  .brand-place { font-size: 8px; letter-spacing: .2em; }
   .menu-toggle { width: 43px; height: 43px; }
   .intro { min-height: 570px; padding: 92px 23px 48px; }
   .location { margin-bottom: 34px; font-size: 10px; letter-spacing: .23em; }
-  h1 { font-size: 26px; letter-spacing: .1em; }
+  h1 { max-width: 350px; font-size: 23px; letter-spacing: .075em; }
   .intro-copy { margin-top: 73px; margin-bottom: 27px; font-size: 12px; line-height: 1.85; letter-spacing: .105em; }
   .gallery { grid-template-columns: 1fr 1fr; gap: 9px; padding: 28px 22px 68px; }
   .gallery-tile, .gallery-tile img { min-height: 190px; }
