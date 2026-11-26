@@ -6,7 +6,7 @@ const decode = value => { const s = value.replace(/-/g, "+").replace(/_/g, "/");
 async function sign(secret, expires) {
   const key = await crypto.subtle.importKey("raw", bytes(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
   const raw = new Uint8Array(await crypto.subtle.sign("HMAC", key, bytes("momarco-admin:" + expires)));
-  return btoa(String.fromCharCode(...raw)).replace(/\\+/g, "-").replace(/\\//g, "_").replace(/=+$/g, "");
+  return btoa(String.fromCharCode(...raw)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
 }
 function tokenFrom(request) {
   const part = (request.headers.get("Cookie") || "").split(";").map(x => x.trim()).find(x => x.startsWith(COOKIE_NAME + "="));
