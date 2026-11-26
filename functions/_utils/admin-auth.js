@@ -22,7 +22,7 @@ async function signingKeys(teamDomain) {
 }
 
 export async function requireAdmin(request, env) {
-  const teamDomain = String(env.ACCESS_TEAM_DOMAIN || "").trim().replace(/^https?:\\/\\//, "").replace(/\\/$/, "");
+  const teamDomain = String(env.ACCESS_TEAM_DOMAIN || "").trim().replace("https://", "").replace("http://", "").split("/")[0];
   const audience = String(env.ACCESS_AUD || "").trim();
   if (!teamDomain || !audience) return { ok: false, response: Response.json({ error: "Admin access is not configured yet." }, { status: 503, headers: { "cache-control": "no-store" } }) };
 
