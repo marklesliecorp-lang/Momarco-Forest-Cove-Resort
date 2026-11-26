@@ -5,19 +5,30 @@ export async function onRequestGet({ request, env }) {
   if (!auth.ok) return auth.response;
   if (!env.DB) return adminJson({ error: "Booking database is unavailable." }, 503);
   try {
-    const result = await env.DB.prepare(`
-      SELECT b.id, b.reference, b.guest_name, b.guest_email, b.guest_phone,
-             b.check_in, b.check_out, b.nights, b.estimated_total, b.currency,
-             b.status, b.payment_status, b.payment_method, b.payment_notice_at,
-             b.created_at, b.proof_object_key,
-             rr.quantity, rr.guests_per_room, rr.nightly_rate, rr.line_total,
-             rt.name AS room_name
-      FROM booking_requests b
-      LEFT JOIN booking_request_rooms rr ON rr.request_id = b.id
-      LEFT JOIN room_types rt ON rt.id = rr.room_type_id
-      ORDER BY b.created_at DESC
-      LIMIT 250
-    `).all();
+    const [result, aggregate] = await Promise.all([
+      env.DB.prepare(`
+        WITH recent AS (SELECT id FROM booking_requests ORDER BY created_at DESC LIMIT 250)
+        SELECT b.id, b.reference, b.guest_name, b.guest_email, b.guest_phone,
+               b.check_in, b.check_out, b.nights, b.estimated_total, b.currency,
+               b.status, b.payment_status, b.payment_method, b.payment_notice_at,
+               b.created_at, b.proof_object_key,
+               rr.quantity, rr.guests_per_room, rr.nightly_rate, rr.line_total,
+               rt.name AS room_name
+        FROM recent r
+        JOIN booking_requests b ON b.id = r.id
+        LEFT JOIN booking_request_rooms rr ON rr.request_id = b.id
+        LEFT JOIN room_types rt ON rt.id = rr.room_type_id
+        ORDER BY b.created_at DESC
+      `).all(),
+      env.DB.prepare(`
+        SELECT COUNT(*) AS total,
+          SUM(CASE WHEN payment_status = 'awaiting_payment' THEN 1 ELSE 0 END) AS awaiting_payment,
+          SUM(CASE WHEN payment_status = 'submitted_for_verification' THEN 1 ELSE 0 END) AS submitted_for_verification,
+          SUM(CASE WHEN payment_status = 'paid' THEN 1 ELSE 0 END) AS paid,
+          SUM(CASE WHEN status = 'confirmed' THEN 1 ELSE 0 END) AS confirmed
+        FROM booking_requests
+      `).first()
+    ]);
     const bookings = new Map();
     for (const row of result.results || []) {
       let booking = bookings.get(row.id);
@@ -41,12 +52,13 @@ export async function onRequestGet({ request, env }) {
     return adminJson({
       bookings: items,
       counts: {
-        total: items.length,
-        awaiting_payment: items.filter((b) => b.payment_status === "awaiting_payment").length,
-        submitted_for_verification: items.filter((b) => b.payment_status === "submitted_for_verification").length,
-        paid: items.filter((b) => b.payment_status === "paid").length,
-        confirmed: items.filter((b) => b.status === "confirmed").length
+        total: aggregate?.total || 0,
+        awaiting_payment: aggregate?.awaiting_payment || 0,
+        submitted_for_verification: aggregate?.submitted_for_verification || 0,
+        paid: aggregate?.paid || 0,
+        confirmed: aggregate?.confirmed || 0
       },
+      returned: items.length,
       limit: 250
     });
   } catch (error) {
