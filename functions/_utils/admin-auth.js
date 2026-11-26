@@ -1,52 +1,33 @@
 const ADMIN_EMAIL = "markleslie.corp@gmail.com";
-let cachedKeys = null;
-let cachedAt = 0;
-
-const decodePart = (part) => {
-  const normalized = part.replace(/-/g, "+").replace(/_/g, "/");
-  const binary = atob(normalized + "=".repeat((4 - normalized.length % 4) % 4));
-  return Uint8Array.from(binary, (char) => char.charCodeAt(0));
-};
-
-const decodeJson = (part) => JSON.parse(new TextDecoder().decode(decodePart(part)));
-
-async function signingKeys(teamDomain) {
-  if (cachedKeys && Date.now() - cachedAt < 300000) return cachedKeys;
-  const response = await fetch("https://" + teamDomain + "/cdn-cgi/access/certs", { headers: { accept: "application/json" } });
-  if (!response.ok) throw new Error("Access signing keys are unavailable.");
-  const data = await response.json();
-  if (!Array.isArray(data.keys) || !data.keys.length) throw new Error("Access signing keys are invalid.");
-  cachedKeys = data.keys;
-  cachedAt = Date.now();
-  return cachedKeys;
+const COOKIE_NAME = "momarco_admin_session";
+const json = (data, status = 200, headers = {}) => Response.json(data, { status, headers: { "cache-control": "no-store", "content-type": "application/json; charset=utf-8", ...headers } });
+const bytes = value => new TextEncoder().encode(value);
+const decode = value => { const s = value.replace(/-/g, "+").replace(/_/g, "/"); return Uint8Array.from(atob(s + "=".repeat((4 - s.length % 4) % 4)), c => c.charCodeAt(0)); };
+async function sign(secret, expires) {
+  const key = await crypto.subtle.importKey("raw", bytes(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const raw = new Uint8Array(await crypto.subtle.sign("HMAC", key, bytes("momarco-admin:" + expires)));
+  return btoa(String.fromCharCode(...raw)).replace(/\\+/g, "-").replace(/\\//g, "_").replace(/=+$/g, "");
 }
-
+function tokenFrom(request) {
+  const part = (request.headers.get("Cookie") || "").split(";").map(x => x.trim()).find(x => x.startsWith(COOKIE_NAME + "="));
+  return part ? part.slice(COOKIE_NAME.length + 1) : "";
+}
 export async function requireAdmin(request, env) {
-  const teamDomain = String(env.ACCESS_TEAM_DOMAIN || "").trim().replace("https://", "").replace("http://", "").split("/")[0];
-  const audience = String(env.ACCESS_AUD || "").trim();
-  if (!teamDomain || !audience) return { ok: false, response: Response.json({ error: "Admin access is not configured yet." }, { status: 503, headers: { "cache-control": "no-store" } }) };
-
-  const token = request.headers.get("Cf-Access-Jwt-Assertion");
-  if (!token) return { ok: false, response: Response.json({ error: "Administrator sign-in required." }, { status: 401, headers: { "cache-control": "no-store" } }) };
+  const secret = String(env.ADMIN_PASSWORD || "");
+  if (secret.length < 14) return { ok: false, response: json({ error: "Admin sign-in is not configured yet." }, 503) };
+  const parts = tokenFrom(request).split(".");
+  if (parts.length !== 2) return { ok: false, response: json({ error: "Please sign in to view receipts." }, 401) };
   try {
-    const parts = token.split(".");
-    if (parts.length !== 3) throw new Error("Invalid token.");
-    const header = decodeJson(parts[0]);
-    const claims = decodeJson(parts[1]);
-    if (header.alg !== "RS256" || claims.iss !== "https://" + teamDomain || !Array.isArray(claims.aud) || !claims.aud.includes(audience)) throw new Error("Invalid token claims.");
-    const now = Math.floor(Date.now() / 1000);
-    if (!Number.isFinite(claims.exp) || claims.exp <= now || (claims.nbf && claims.nbf > now)) throw new Error("Expired token.");
-    if (String(claims.email || "").toLowerCase() !== ADMIN_EMAIL) throw new Error("Not an administrator.");
-    const keys = await signingKeys(teamDomain);
-    const jwk = keys.find((key) => key.kid === header.kid && key.kty === "RSA" && (!key.use || key.use === "sig"));
-    if (!jwk) throw new Error("Unknown signing key.");
-    const key = await crypto.subtle.importKey("jwk", jwk, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["verify"]);
-    const valid = await crypto.subtle.verify({ name: "RSASSA-PKCS1-v1_5" }, key, decodePart(parts[2]), new TextEncoder().encode(parts[0] + "." + parts[1]));
-    if (!valid) throw new Error("Invalid signature.");
+    const expires = Number(parts[0]);
+    if (!Number.isSafeInteger(expires) || expires <= Math.floor(Date.now() / 1000)) throw new Error("Expired");
+    const expected = decode(await sign(secret, expires)), actual = decode(parts[1]);
+    if (expected.length !== actual.length) throw new Error("Invalid");
+    let mismatch = 0;
+    for (let i = 0; i < expected.length; i++) mismatch |= expected[i] ^ actual[i];
+    if (mismatch) throw new Error("Invalid");
     return { ok: true, email: ADMIN_EMAIL };
   } catch {
-    return { ok: false, response: Response.json({ error: "Administrator authentication failed." }, { status: 403, headers: { "cache-control": "no-store" } }) };
+    return { ok: false, response: json({ error: "Your admin session has expired. Please sign in again." }, 401, { "set-cookie": COOKIE_NAME + "=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0" }) };
   }
 }
-
-export const adminJson = (data, status = 200) => Response.json(data, { status, headers: { "cache-control": "no-store", "content-type": "application/json; charset=utf-8" } });
+export const adminJson = (data, status = 200) => json(data, status);
