@@ -7,8 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Allura&family=DM+Sans:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css"><script src="assets/js/main.js?v=nav-clean-20261125" defer></script>
-<script src="https://js.paystack.co/v2/inline.js" defer></script>
-<script src="assets/js/booking.js?v=paystack-popup-20261125" defer></script></head>
+<script src="assets/js/booking.js?v=manual-transfer-proof-20261125" defer></script></head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header">
@@ -48,6 +47,25 @@
 <p class="booking-help">Room quantities are your requested units. The resort will assign actual rooms at reception.</p>
 <button class="reservation-button booking-submit" id="booking-review" type="button" disabled>CONTINUE TO PAYMENT <span aria-hidden="true">→</span></button>
 <p class="booking-message" id="booking-message" role="status" aria-live="polite"></p>
+</section>
+<section class="booking-panel payment-panel" id="payment-panel" hidden aria-labelledby="payment-title">
+<h2 id="payment-title">05 · Payment</h2>
+<p class="booking-help">Your booking total is payable in Philippine pesos (PHP). Choose your preferred payment method below.</p>
+<div class="booking-payment-methods" role="group" aria-label="Choose payment method">
+<label class="payment-choice"><input type="radio" name="payment_method" value="gcash"> <span>GCash</span></label>
+<label class="payment-choice"><input type="radio" name="payment_method" value="cimb"> <span>CIMB Bank</span></label>
+</div>
+<div class="payment-account" id="gcash-account" hidden><h3>GCash Payment Details</h3><dl></dl></div>
+<div class="payment-account" id="cimb-account" hidden><h3>CIMB Bank Payment Details</h3><dl></dl></div>
+<div id="payment-proof-area" hidden>
+<label class="booking-field payment-upload">UPLOAD PAYMENT SCREENSHOT
+<input id="payment-proof" name="payment_proof" type="file" accept="image/jpeg,image/png,image/webp" required>
+</label>
+<p class="booking-help">Upload a clear screenshot of your successful transfer (JPG, PNG or WEBP; maximum 5 MB).</p>
+<p class="payment-notice">Please provide proof of payment. Your booking confirmation will be sent once payment has been confirmed.</p>
+<button class="reservation-button booking-submit" id="payment-submit" type="button">I HAVE PAID</button>
+</div>
+<p class="booking-message" id="payment-message" role="status" aria-live="polite"></p>
 </section></form></div></section></main>
 <footer class="site-footer"><a class="footer-brand" href="index.html">Momarco <span>FOREST COVE RESORT</span></a><p>Tanay, Rizal, Philippines</p><small>© <span id="year"></span> Momarco Resort</small></footer>
 </body></html>
