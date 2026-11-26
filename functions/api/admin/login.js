@@ -30,7 +30,7 @@ function sameOrigin(request) {
 
 export async function requireAdmin(request, env) {
   const secret = String(env.ADMIN_PASSWORD || "");
-  if (secret.length < 14) return { ok: false, response: json({ error: "Admin sign-in is not configured yet." }, 503) };
+  if (secret.length < 8) return { ok: false, response: json({ error: "Admin sign-in is not configured yet." }, 503) };
   const parts = cookieValue(request).split(".");
   if (parts.length !== 2) return { ok: false, response: json({ error: "Please sign in to view receipts." }, 401) };
   try {
@@ -51,7 +51,7 @@ export async function requireAdmin(request, env) {
 export async function onRequestPost({ request, env }) {
   if (!sameOrigin(request)) return json({ error: "Request origin not allowed." }, 403);
   const secret = String(env.ADMIN_PASSWORD || "");
-  if (secret.length < 14) return json({ error: "Admin sign-in is not configured yet." }, 503);
+  if (secret.length < 8) return json({ error: "Admin sign-in is not configured yet." }, 503);
   let body;
   try { body = await request.json(); } catch { return json({ error: "Enter your admin email and password." }, 400); }
   const email = String(body.email || "").trim().toLowerCase();
