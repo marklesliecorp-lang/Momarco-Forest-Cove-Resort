@@ -12,9 +12,16 @@
 <main class="admin-shell">
 <header class="admin-header"><a class="admin-brand" href="index.html"><span>Momarco</span><small>FOREST COVE RESORT</small></a><div class="admin-account"><span class="secure-dot"></span><span>PRIVATE RECEIPTS</span></div></header>
 <section class="admin-intro"><p class="eyebrow">ADMINISTRATOR ONLY</p><h1>Payment Receipts</h1><p>View payment screenshots submitted by guests.</p></section>
-<div id="admin-alert" class="admin-alert" role="status" aria-live="polite">Checking administrator access…</div>
-<section class="booking-admin-section">
-<div class="section-heading"><div><p class="eyebrow">GUEST UPLOADS</p><h2>Submitted receipts</h2></div><button id="refresh-bookings" class="secondary-button" type="button">REFRESH</button></div>
+<section id="admin-login" class="admin-login" aria-labelledby="login-title">
+<form id="admin-login-form" class="admin-login-form">
+<p class="eyebrow">PRIVATE ADMINISTRATOR SIGN-IN</p><h2 id="login-title">Welcome back</h2>
+<label for="admin-email">Email address</label><input id="admin-email" name="email" type="email" value="markleslie.corp@gmail.com" autocomplete="username" required>
+<label for="admin-password">Password</label><input id="admin-password" name="password" type="password" autocomplete="current-password" required>
+<button class="receipt-button" type="submit">SIGN IN</button><p id="login-error" class="login-error" role="alert"></p>
+</form></section>
+<div id="admin-alert" class="admin-alert" role="status" aria-live="polite" hidden></div>
+<section id="receipts-panel" class="booking-admin-section" hidden>
+<div class="section-heading"><div><p class="eyebrow">GUEST UPLOADS</p><h2>Submitted receipts</h2></div><div class="admin-controls"><button id="refresh-bookings" class="secondary-button" type="button">REFRESH</button><button id="admin-logout" class="secondary-button" type="button">SIGN OUT</button></div></div>
 <div class="booking-tools"><input id="booking-search" type="search" placeholder="Search guest name or booking reference" aria-label="Search receipts"></div>
 <div id="booking-list" class="booking-list"><div class="empty-state">Loading submitted receipts…</div></div>
 </section>
