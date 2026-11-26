@@ -208,3 +208,19 @@ h1 { max-width: 900px; margin: 0; color: var(--pink); font-size: clamp(23px, 4.8
 #booking-pay-link[hidden] {
   display: none !important;
 }
+
+/* Manual transfer and private payment-proof upload */
+.payment-panel[hidden], .payment-account[hidden], #payment-proof-area[hidden] { display:none !important; }
+.booking-payment-methods { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:18px 0; }
+.payment-choice { display:flex; align-items:center; gap:10px; padding:15px; border:1px solid rgba(244,168,210,.4); color:var(--white); background:rgba(255,255,255,.035); cursor:pointer; }
+.payment-choice input { accent-color:var(--pink); width:18px; height:18px; }
+.payment-account { padding:16px; margin:14px 0; border:1px solid rgba(244,168,210,.35); background:rgba(255,255,255,.035); }
+.payment-account h3 { margin:0 0 12px; color:var(--pink); font-size:14px; }
+.payment-account dl { margin:0; }
+.payment-account dl div { display:flex; justify-content:space-between; gap:14px; padding:8px 0; border-bottom:1px solid rgba(244,168,210,.12); }
+.payment-account dt { color:var(--muted); font-size:11px; }
+.payment-account dd { margin:0; color:var(--white); font-size:12px; font-weight:700; text-align:right; overflow-wrap:anywhere; }
+.payment-upload { display:block; margin-top:16px; }
+.payment-upload input { display:block; width:100%; margin-top:9px; padding:12px; border:1px solid rgba(244,168,210,.35); color:var(--white); font-size:16px; }
+.payment-notice { margin:14px 0; color:var(--pink-soft); font-size:12px; line-height:1.7; }
+@media(max-width:600px){.booking-payment-methods{grid-template-columns:1fr 1fr}.payment-account{padding:13px}.payment-account dl div{align-items:flex-start}}
