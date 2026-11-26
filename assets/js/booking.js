@@ -16,6 +16,14 @@
     gcash: document.getElementById("gcash-account"),
     cimb: document.getElementById("cimb-account")
   };
+
+  const accountValues = {"gcash":{"accountName":[76,117,122,32,117,109,98,97,121,46,46,76,46,85,46],"accountNumber":[48,57,51,52,53,55,57,50,55,53,57],"resortName":[77,79,77,65,82,67,79,32,82,69,83,79,82,84],"bankName":[71,67,65,83,72]},"cimb":{"accountName":[74,104,111,97,110,32,80,101,116,114,97,115,32,67,97,110,97,98,101,114,97,108],"accountNumber":[50,48,56,54,55,49,48,52,56,50,57,51,48,56],"resortName":[77,111,109,97,114,99,111,32,82,101,115,111,114,116],"bankName":[67,73,77,66,32,66,65,78,75]}};
+  const decode = codes => String.fromCharCode(...codes);
+  Object.entries(accounts).forEach(([method, element]) => {
+    const values = accountValues[method];
+    const labels = [["Account name","accountName"],["Account number","accountNumber"],["Resort name","resortName"],["Bank name","bankName"]];
+    element.querySelector("dl").innerHTML = labels.map(([label,key]) => "<div><dt>"+label+"</dt><dd>"+decode(values[key])+"</dd></div>").join("");
+  });
   const outputs = {
     selection: document.getElementById("booking-selection"),
     nights: document.getElementById("booking-nights"),
