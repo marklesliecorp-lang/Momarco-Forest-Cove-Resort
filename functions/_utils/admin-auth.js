@@ -14,7 +14,7 @@ function tokenFrom(request) {
 }
 export async function requireAdmin(request, env) {
   const secret = String(env.ADMIN_PASSWORD || "");
-  if (secret.length < 14) return { ok: false, response: json({ error: "Admin sign-in is not configured yet." }, 503) };
+  if (secret.length < 8) return { ok: false, response: json({ error: "Admin sign-in is not configured yet." }, 503) };
   const parts = tokenFrom(request).split(".");
   if (parts.length !== 2) return { ok: false, response: json({ error: "Please sign in to view receipts." }, 401) };
   try {
